@@ -1,0 +1,66 @@
+import java.io.*;
+import java.util.*;
+
+public class FileProcessor {
+    
+    // Метод для удаления дублирующихся строк
+    public static void removeDuplicateLines(String inputFilePath, String outputFilePath) throws IOException {
+        Set<String> uniqueLines = new HashSet<>();
+        List<String> allLines = new ArrayList<>();
+        int duplicateCount = 0;
+
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputFilePath))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                allLines.add(line);
+                if (!uniqueLines.add(line)) {
+                    duplicateCount++;
+                }
+            }
+        }
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(outputFilePath))) {
+            for (String uniqueLine : uniqueLines) {
+                writer.write(uniqueLine);
+                writer.newLine();
+            }
+            writer.write("Количество удаленных дублирующихся строк: " + duplicateCount);
+        }
+
+        System.out.println("Дублирующиеся строки удалены. Количество удаленных строк: " + duplicateCount);
+    }
+
+    // Метод для восстановления сжатой версии
+    public static String decompress(String compressed) {
+        StringBuilder decompressed = new StringBuilder();
+        String[] parts = compressed.split("\\s+");
+        
+        for (int i = 0; i < parts.length; i++) {
+            if (i % 2 == 0) { // Четные индексы - количество
+                int count = Integer.parseInt(parts[i]);
+                String value = parts[i + 1]; // Нечетный индекс - значение
+                for (int j = 0; j < count; j++) {
+                    decompressed.append(value).append(" ");
+                }
+            }
+        }
+        
+        return decompressed.toString().trim();
+    }
+
+    public static void main(String[] args) {
+        try {
+            // Удаление дублирующихся строк
+            String inputFilePath = "input.txt"; // Путь к входному файлу
+            String outputFilePath = "output.txt"; // Путь к выходному файлу
+            removeDuplicateLines(inputFilePath, outputFilePath);
+            
+            // Пример сжатой строки для восстановления
+            String compressed = "3 apple 2 banana 5 orange"; // Пример сжатой строки
+            String decompressed = decompress(compressed);
+            System.out.println("Восстановленная строка: " + decompressed);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+}
